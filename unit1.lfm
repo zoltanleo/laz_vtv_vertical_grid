@@ -1,0 +1,99 @@
+object Form1: TForm1
+  Left = 336
+  Height = 240
+  Top = 31
+  Width = 690
+  Caption = 'Form1'
+  ClientHeight = 240
+  ClientWidth = 690
+  OnCreate = FormCreate
+  object LazVirtualStringTree1: TLazVirtualStringTree
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Splitter1
+    AnchorSideBottom.Control = Button1
+    Left = 10
+    Height = 185
+    Top = 10
+    Width = 326
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Around = 10
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.MainColumn = -1
+    TabOrder = 0
+  end
+  object Button1: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 605
+    Height = 25
+    Top = 205
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Around = 10
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object DBGrid1: TDBGrid
+    AnchorSideLeft.Control = Splitter1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Button1
+    Left = 361
+    Height = 185
+    Top = 10
+    Width = 319
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Around = 10
+    Color = clWindow
+    Columns = <>
+    DataSource = DataSource1
+    Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisplayMemoText]
+    TabOrder = 2
+  end
+  object Splitter1: TSplitter
+    AnchorSideTop.Control = LazVirtualStringTree1
+    AnchorSideBottom.Control = LazVirtualStringTree1
+    AnchorSideBottom.Side = asrBottom
+    Left = 346
+    Height = 185
+    Top = 10
+    Width = 5
+    Align = alNone
+    Anchors = [akTop, akBottom]
+    AutoSnap = False
+  end
+  object DBase: TIBDatabase
+    Connected = False
+    CreateIfNotExists = False
+    AllowStreamedConnected = False
+    IdleTimer = 0
+    TraceFlags = []
+    UseDefaultSystemCodePage = False
+    Left = 59
+    Top = 34
+  end
+  object TrRead: TIBTransaction
+    TransactionName = '{CF796BB5-74D3-4990-B9C2-191C748AF264}'
+    Active = False
+    Left = 136
+    Top = 32
+  end
+  object MDS: TMemDataset
+    FieldDefs = <>
+    Left = 216
+    Top = 32
+  end
+  object DataSource1: TDataSource
+    DataSet = MDS
+    Left = 420
+    Top = 58
+  end
+end
