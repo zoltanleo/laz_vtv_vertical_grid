@@ -25,8 +25,9 @@ const
     {$ENDIF}
   {$ENDIF}
 
-  DataLoadingMsg = 'Data is loading, please wait...';
-  NoChildRecords = 'Node has no children';
+  DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
+  CantDeleteDataFile = 'Can''t delete old "%s" file. The new file has been saved as "%s"';
+  //NoChildRecords = 'Node has no children';
 
 type
 
@@ -34,14 +35,19 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
     DataSource1: TDataSource;
     DBase: TIBDatabase;
     DBGrid1: TDBGrid;
+    MDS: TMemDataset;
+    oDlg: TOpenDialog;
     Splitter1: TSplitter;
     TrRead: TIBTransaction;
     LazVirtualStringTree1: TLazVirtualStringTree;
-    MDS: TMemDataset;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
 
@@ -79,18 +85,18 @@ begin
     Params.Add('nowait');
     DefaultDatabase:= DBase;
   end;
+
+  Button2.Visible:= False;
+  Button3.Visible:= False;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
   execSQL: TIBSQL = nil;
-  msTxt, msImg: TMemoryStream;
 begin
   if not DBase.Connected then DBase.Connected:= True;
   execSQL:= TIBSQL.Create(Application);
   execSQL.Transaction:= TrRead;
-  msTxt:= TMemoryStream.Create;
-  msImg:= TMemoryStream.Create;
   try
     try
       TrRead.StartTransaction;
@@ -109,22 +115,25 @@ begin
 
       InitMDS(MDS);
 
-      while not execSQL.Eof do
-      begin
-        //msTxt.Clear;
-        //TBlobField(execSQL.Fields[6]).SaveToStream(msTxt);
-        //msTxt.Position:= 0;
-        MDS.AppendRecord([
-                         execSQL.Fields[0].AsInteger,
-                         execSQL.Fields[1].AsString,
-                         execSQL.Fields[2].AsString,
-                         execSQL.Fields[3].AsString,
-                         execSQL.Fields[4].AsInteger,
-                         execSQL.Fields[5].AsInteger,
-                         execSQL.Fields[6].AsVariant,
-                         execSQL.Fields[7].AsVariant
-                          ]);
-        execSQL.Next;
+
+      try
+        MDS.DisableControls;
+        while not execSQL.Eof do
+        begin
+          MDS.AppendRecord([
+                           execSQL.Fields[0].AsInteger,
+                           execSQL.Fields[1].AsString,
+                           execSQL.Fields[2].AsString,
+                           execSQL.Fields[3].AsString,
+                           execSQL.Fields[4].AsInteger,
+                           execSQL.Fields[5].AsInteger,
+                           execSQL.Fields[6].AsVariant,
+                           execSQL.Fields[7].AsVariant
+                            ]);
+          execSQL.Next;
+        end;
+      finally
+        MDS.EnableControls;
       end;
 
       TrRead.Commit;
@@ -140,17 +149,55 @@ begin
       end;
     end;
   finally
-    FreeAndNil(msImg);
-    FreeAndNil(msTxt);
     FreeAndNil(execSQL);
   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  InitMDS(MDS);
+
+  try
+    MDS.DisableControls;
+
+    if FileExists(DataFile)
+    then MDS.LoadFromFile(DataFile)
+    else
+      begin
+        oDlg.Filter:= 'MDS data file (*.dat)|*.dat';
+        oDlg.Options:= oDlg.Options + [ofFileMustExist];
+        oDlg.InitialDir:= ExtractFilePath(DataFile);
+        //SetCurrentDir(oDlg.InitialDir);
+        if oDlg.Execute then MDS.LoadFromFile(oDlg.FileName);
+      end;
+  finally
+    MDS.EnableControls;
+  end;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var
+  NewDataFile: String = '';
+begin
+  if MDS.IsEmpty then Exit;
+  if FileExists(DataFile) then
+    if not DeleteFile(DataFile) then
+    begin
+      NewDataFile:= DataFile + '_' + FormatDateTime('yyyy_mm_dd__hh_nn_ss_zzz',Now);
+      ShowMessage(Format(CantDeleteDataFile,
+                        [ExtractFileName(DataFile),
+                        ExtractFileName(NewDataFile)]));
+      MDS.SaveToFile(NewDataFile);
+      Exit;
+    end;
+  MDS.SaveToFile(DataFile)
 end;
 
 procedure TForm1.InitMDS(Sender: TMemDataset);
 begin
   with TMemDataset(Sender) do
   begin
-    if Active then Clear(True);
+    Clear(True);
     FieldDefs.Add('SPECIES_NO',ftInteger);
     FieldDefs.Add('CATEGORY',ftString,15);
     FieldDefs.Add('COMMON_NAME',ftString,30);
@@ -163,7 +210,6 @@ begin
     Active:= True;
     Filtered:= False;
   end;
-
 
   //CREATE TABLE BIOLIFE (
   //    SPECIES_NO    INTEGER,
