@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, memds, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL;
+  DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL, IBQuery;
 
 const
 
@@ -30,6 +30,17 @@ const
   //NoChildRecords = 'Node has no children';
 
 type
+  PBioLifeRec = ^TBioLifeRec;
+  TBioLifeRec = packed record
+    species_no: PtrInt;
+    category: String;
+    common_name: String;
+    species_name: String;
+    length_cm: PtrInt;
+    length_in: PtrInt;
+    notes: String;
+    graphic: String;
+  end;
 
   { TForm1 }
 
@@ -37,18 +48,24 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    DataSource1: TDataSource;
     DBase: TIBDatabase;
-    DBGrid1: TDBGrid;
     MDS: TMemDataset;
     oDlg: TOpenDialog;
-    Splitter1: TSplitter;
     TrRead: TIBTransaction;
-    LazVirtualStringTree1: TLazVirtualStringTree;
+    VST: TLazVirtualStringTree;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      var Allowed: Boolean);
+    procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure VSTGetNodeDataSize(Sender: TBaseVirtualTree;
+      var NodeDataSize: Integer);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+    procedure VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
   private
 
   public
@@ -65,6 +82,18 @@ implementation
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
+const
+  ColumnParams: array[0..1] of
+  record
+    Name: String;
+    Len: integer;
+   end =
+  ((Name:'Field Name'     ; Len:150),
+   (Name:'Field Value' ; Len:300)
+  );
+var
+  NewColumn: TVirtualTreeColumn;
+  i: Integer;
 begin
   with DBase do
   begin
@@ -74,7 +103,6 @@ begin
     Params.Add(PWDStr);
     Params.Add('lc_ctype=UTF8');
     LoginPrompt:= False;
-    //DefaultTransaction:= TrRead;
   end;
 
   with TrRead do
@@ -86,8 +114,131 @@ begin
     DefaultDatabase:= DBase;
   end;
 
+  with VST do
+  begin
+    RootNodeCount:= 0;
+    Header.Options:= Header.Options + [hoVisible];
+    TreeOptions.AutoOptions:= TreeOptions.AutoOptions + [toAutoScroll];
+    AutoScrollDelay := 100;
+    TreeOptions.PaintOptions:= TreeOptions.PaintOptions +[toShowBackground];
+    Header.Columns.Clear;
+
+    for i:= 0 to Pred(length(ColumnParams)) do
+    begin
+      NewColumn := Header.Columns.Add;
+      NewColumn.Text      := ColumnParams[i].Name;
+      NewColumn.Width     := ColumnParams[i].Len;
+    end;
+  end;
+
   Button2.Visible:= False;
   Button3.Visible:= False;
+end;
+
+procedure TForm1.VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  var Allowed: Boolean);
+var
+  i: PtrInt = 0;
+  NodeData: PBioLifeRec = nil;
+begin
+  if (Node^.ChildCount > 0) then VST.DeleteChildren(Node);
+  for i:= 0 to Pred(Pred(MDS.FieldCount)) do VST.AddChild(Node);
+end;
+
+procedure TForm1.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+  NodeData: PBioLifeRec;
+begin
+  NodeData:= TBaseVirtualTree(Sender).GetNodeData(Node);
+
+  if Assigned(NodeData) then
+  begin
+    NodeData^.category:= '';
+    NodeData^.species_name:= '';
+    NodeData^.common_name:= '';
+    NodeData^.length_cm:= 0;
+    NodeData^.length_in:= 0;
+    NodeData^.species_no:= 0;
+    //Finalize(NodeData);
+  end;
+end;
+
+procedure TForm1.VSTGetNodeDataSize(Sender: TBaseVirtualTree;
+  var NodeDataSize: Integer);
+begin
+  NodeDataSize:= SizeOf(TBioLifeRec);
+end;
+
+procedure TForm1.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
+const
+  FieldNameArr: array[0..6] of String = (
+                  'SPECIES_NO',
+                  'CATEGORY',
+                  //'COMMON_NAME',
+                  'SPECIES_NAME',
+                  'LENGTH__CM_',
+                  'LENGTH_IN',
+                  'NOTES',
+                  'GRAPHIC'
+                );
+var
+  NodeData: PBioLifeRec;
+begin
+  if (vsHasChildren in Node^.States) then
+    begin
+      MDS.RecNo:= Succ(Node^.Index);
+      NodeData:= VST.GetNodeData(Node);
+      NodeData^.species_no:= MDS.Fields[0].AsInteger;
+
+      case Column of
+        0: CellText:= 'Common name:';
+        1: CellText:= MDS.Fields[2].AsString;
+      end;
+    end
+  else
+    begin
+      NodeData:= VST.GetNodeData(Node^.Parent);
+
+      case Column of
+        0: CellText:= FieldNameArr[Node^.Index];
+        1:
+          case Node^.Index of
+            0: CellText:= IntToStr(NodeData^.species_no);
+            1: CellText:= NodeData^.category;
+            //exclude field 'COMMON_NAME' (MDS.Fields[2])
+            2: CellText:= NodeData^.species_name;
+            3: CellText:= IntToStr(NodeData^.length_cm);
+            4: CellText:= IntToStr(NodeData^.length_in);
+            5: CellText:= NodeData^.notes;
+            //6: CellText:= NodeData^.graphic;
+          end;
+
+      end;
+    end
+  ;
+end;
+
+procedure TForm1.VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
+  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+var
+  NodeData: PBioLifeRec = nil;
+begin
+  if not Assigned(ParentNode) then
+  begin
+    InitialStates:= [ivsHasChildren];
+    MDS.RecNo:= Succ(Node^.Index);
+
+    NodeData:= VST.GetNodeData(Node);
+    NodeData^.species_no:= MDS.Fields[0].AsInteger;
+    NodeData^.category:= MDS.Fields[1].AsString;
+    NodeData^.common_name:= MDS.Fields[2].AsString;
+    NodeData^.species_name:= MDS.Fields[3].AsString;
+    NodeData^.length_cm:= MDS.Fields[4].AsInteger;
+    NodeData^.length_in:= MDS.Fields[5].AsInteger;
+    NodeData^.notes:= MDS.Fields[6].AsString;
+    NodeData^.graphic:= MDS.Fields[7].AsString;
+  end;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -114,10 +265,10 @@ begin
       execSQL.ExecQuery;
 
       InitMDS(MDS);
-
+      VST.BeginUpdate;
+      MDS.DisableControls;
 
       try
-        MDS.DisableControls;
         while not execSQL.Eof do
         begin
           MDS.AppendRecord([
@@ -130,10 +281,16 @@ begin
                            execSQL.Fields[6].AsVariant,
                            execSQL.Fields[7].AsVariant
                             ]);
+
           execSQL.Next;
         end;
+
+        VST.Clear;
+        VST.RootNodeCount:= MDS.RecordCount;
+
       finally
         MDS.EnableControls;
+        VST.EndUpdate;
       end;
 
       TrRead.Commit;

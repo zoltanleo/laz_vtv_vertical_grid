@@ -17,8 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="4"/>
+      <RevisionNr Value="3"/>
+      <BuildNr Value="18"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -31,9 +31,6 @@
       <FormatVersion Value="2"/>
     </RunParams>
     <RequiredPackages>
-      <Item>
-        <PackageName Value="rxnew"/>
-      </Item>
       <Item>
         <PackageName Value="FCL"/>
       </Item>

@@ -2,20 +2,22 @@ object Form1: TForm1
   Left = 336
   Height = 310
   Top = 31
-  Width = 841
+  Width = 505
   Caption = 'Form1'
   ClientHeight = 310
-  ClientWidth = 841
+  ClientWidth = 505
   OnCreate = FormCreate
-  object LazVirtualStringTree1: TLazVirtualStringTree
+  LCLVersion = '2.3.0.0'
+  object VST: TLazVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Splitter1
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Button1
     Left = 10
     Height = 255
     Top = 10
-    Width = 402
+    Width = 485
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 10
     DefaultText = 'Node'
@@ -23,13 +25,18 @@ object Form1: TForm1
     Header.Columns = <>
     Header.MainColumn = -1
     TabOrder = 0
+    OnExpanding = VSTExpanding
+    OnFreeNode = VSTFreeNode
+    OnGetText = VSTGetText
+    OnGetNodeDataSize = VSTGetNodeDataSize
+    OnInitNode = VSTInitNode
   end
   object Button1: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 729
+    Left = 393
     Height = 25
     Top = 275
     Width = 102
@@ -40,42 +47,11 @@ object Form1: TForm1
     OnClick = Button1Click
     TabOrder = 1
   end
-  object DBGrid1: TDBGrid
-    AnchorSideLeft.Control = Splitter1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Button1
-    Left = 437
-    Height = 255
-    Top = 10
-    Width = 394
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Around = 10
-    Color = clWindow
-    Columns = <>
-    DataSource = DataSource1
-    Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgDisplayMemoText]
-    TabOrder = 2
-  end
-  object Splitter1: TSplitter
-    AnchorSideTop.Control = LazVirtualStringTree1
-    AnchorSideBottom.Control = LazVirtualStringTree1
-    AnchorSideBottom.Side = asrBottom
-    Left = 422
-    Height = 255
-    Top = 10
-    Width = 5
-    Align = alNone
-    Anchors = [akTop, akBottom]
-    AutoSnap = False
-  end
   object Button2: TButton
     AnchorSideRight.Control = Button1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 589
+    Left = 253
     Height = 25
     Top = 275
     Width = 130
@@ -84,13 +60,13 @@ object Form1: TForm1
     BorderSpacing.Around = 10
     Caption = 'MDS Load from File'
     OnClick = Button2Click
-    TabOrder = 4
+    TabOrder = 2
   end
   object Button3: TButton
     AnchorSideRight.Control = Button2
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 466
+    Left = 130
     Height = 25
     Top = 275
     Width = 113
@@ -99,7 +75,7 @@ object Form1: TForm1
     BorderSpacing.Around = 10
     Caption = 'MDS Save to File'
     OnClick = Button3Click
-    TabOrder = 5
+    TabOrder = 3
   end
   object DBase: TIBDatabase
     Connected = False
@@ -117,19 +93,14 @@ object Form1: TForm1
     Left = 136
     Top = 32
   end
-  object DataSource1: TDataSource
-    DataSet = MDS
-    Left = 216
-    Top = 34
-  end
   object oDlg: TOpenDialog
     DefaultExt = '.dat'
-    Left = 136
+    Left = 59
     Top = 96
   end
   object MDS: TMemDataset
     FieldDefs = <>
-    Left = 216
-    Top = 107
+    Left = 136
+    Top = 104
   end
 end

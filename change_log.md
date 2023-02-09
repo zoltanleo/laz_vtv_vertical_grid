@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.3
+- implemented child nodes display
+
+--------
 0.0.2
 - implemented data display for the grid
 
