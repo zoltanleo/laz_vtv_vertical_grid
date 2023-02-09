@@ -1,13 +1,12 @@
 object Form1: TForm1
   Left = 336
-  Height = 310
+  Height = 394
   Top = 31
-  Width = 505
+  Width = 671
   Caption = 'Form1'
-  ClientHeight = 310
-  ClientWidth = 505
+  ClientHeight = 394
+  ClientWidth = 671
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
   object VST: TLazVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -15,9 +14,9 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Button1
     Left = 10
-    Height = 255
+    Height = 339
     Top = 10
-    Width = 485
+    Width = 651
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 10
     DefaultText = 'Node'
@@ -25,6 +24,7 @@ object Form1: TForm1
     Header.Columns = <>
     Header.MainColumn = -1
     TabOrder = 0
+    OnAddToSelection = VSTAddToSelection
     OnExpanding = VSTExpanding
     OnFreeNode = VSTFreeNode
     OnGetText = VSTGetText
@@ -36,9 +36,9 @@ object Form1: TForm1
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 393
+    Left = 559
     Height = 25
-    Top = 275
+    Top = 359
     Width = 102
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -51,9 +51,9 @@ object Form1: TForm1
     AnchorSideRight.Control = Button1
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 253
+    Left = 419
     Height = 25
-    Top = 275
+    Top = 359
     Width = 130
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -66,9 +66,9 @@ object Form1: TForm1
     AnchorSideRight.Control = Button2
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 130
+    Left = 296
     Height = 25
-    Top = 275
+    Top = 359
     Width = 113
     Anchors = [akRight, akBottom]
     AutoSize = True
@@ -76,6 +76,19 @@ object Form1: TForm1
     Caption = 'MDS Save to File'
     OnClick = Button3Click
     TabOrder = 3
+  end
+  object CheckBox1: TCheckBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Button1
+    AnchorSideTop.Side = asrCenter
+    AnchorSideBottom.Side = asrBottom
+    Left = 10
+    Height = 19
+    Top = 362
+    Width = 281
+    BorderSpacing.Left = 10
+    Caption = 'Collapse others when expanding the current node'
+    TabOrder = 4
   end
   object DBase: TIBDatabase
     Connected = False

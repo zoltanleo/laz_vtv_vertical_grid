@@ -17,8 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <RevisionNr Value="3"/>
-      <BuildNr Value="18"/>
+      <RevisionNr Value="4"/>
+      <BuildNr Value="19"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Default" Default="True"/>

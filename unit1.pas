@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, memds, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL, IBQuery;
+  DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL;
 
 const
 
@@ -48,6 +48,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    CheckBox1: TCheckBox;
     DBase: TIBDatabase;
     MDS: TMemDataset;
     oDlg: TOpenDialog;
@@ -57,6 +58,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
       var Allowed: Boolean);
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -116,11 +118,28 @@ begin
 
   with VST do
   begin
+    ShowHint:= True;
+    HintMode:= hmTooltip;
     RootNodeCount:= 0;
-    Header.Options:= Header.Options + [hoVisible];
-    TreeOptions.AutoOptions:= TreeOptions.AutoOptions + [toAutoScroll];
     AutoScrollDelay := 100;
-    TreeOptions.PaintOptions:= TreeOptions.PaintOptions +[toShowBackground];
+    Header.AutoSizeIndex:= 1;
+    Header.Options:= Header.Options
+                  + [hoVisible]
+                  ;
+    TreeOptions.AutoOptions:= TreeOptions.AutoOptions
+                  + [toAutoScroll]
+                  + [toAutoExpand]
+                  + [toAutoSpanColumns]
+                  ;
+    TreeOptions.MiscOptions:= TreeOptions.MiscOptions
+                  + [toGridExtensions]
+                  ;
+    TreeOptions.PaintOptions:= TreeOptions.PaintOptions
+                  + [toShowBackground]
+                  + [toHideTreeLinesIfThemed]
+                  + [toShowVertGridLines]
+                  + [toShowHorzGridLines]
+                  ;
     Header.Columns.Clear;
 
     for i:= 0 to Pred(length(ColumnParams)) do
@@ -135,14 +154,25 @@ begin
   Button3.Visible:= False;
 end;
 
+procedure TForm1.VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode
+  );
+begin
+  Caption:= IntToStr(Node^.NodeHeight);
+end;
+
 procedure TForm1.VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
   var Allowed: Boolean);
 var
   i: PtrInt = 0;
-  NodeData: PBioLifeRec = nil;
 begin
-  if (Node^.ChildCount > 0) then VST.DeleteChildren(Node);
-  for i:= 0 to Pred(Pred(MDS.FieldCount)) do VST.AddChild(Node);
+  VST.BeginUpdate;
+  try
+    if CheckBox1.Checked then VST.FullCollapse(nil);
+    if (Node^.ChildCount > 0) then VST.DeleteChildren(Node);
+    for i:= 0 to Pred(Pred(MDS.FieldCount)) do VST.AddChild(Node);
+  finally
+    VST.EndUpdate;
+  end;
 end;
 
 procedure TForm1.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -192,8 +222,10 @@ begin
       NodeData^.species_no:= MDS.Fields[0].AsInteger;
 
       case Column of
-        0: CellText:= 'Common name:';
-        1: CellText:= MDS.Fields[2].AsString;
+        //0: CellText:= '';
+        //1: CellText:= MDS.Fields[2].AsString;
+        0: CellText:= MDS.Fields[2].AsString;
+        1: CellText:= '';
       end;
     end
   else
@@ -211,7 +243,7 @@ begin
             3: CellText:= IntToStr(NodeData^.length_cm);
             4: CellText:= IntToStr(NodeData^.length_in);
             5: CellText:= NodeData^.notes;
-            //6: CellText:= NodeData^.graphic;
+            6: CellText:= 'coming soon ...';
           end;
 
       end;
@@ -224,21 +256,36 @@ procedure TForm1.VSTInitNode(Sender: TBaseVirtualTree; ParentNode,
 var
   NodeData: PBioLifeRec = nil;
 begin
-  if not Assigned(ParentNode) then
-  begin
-    InitialStates:= [ivsHasChildren];
-    MDS.RecNo:= Succ(Node^.Index);
+  if not Assigned(ParentNode)
+  then
+    begin
+      InitialStates:= [ivsHasChildren];
+      MDS.RecNo:= Succ(Node^.Index);
 
-    NodeData:= VST.GetNodeData(Node);
-    NodeData^.species_no:= MDS.Fields[0].AsInteger;
-    NodeData^.category:= MDS.Fields[1].AsString;
-    NodeData^.common_name:= MDS.Fields[2].AsString;
-    NodeData^.species_name:= MDS.Fields[3].AsString;
-    NodeData^.length_cm:= MDS.Fields[4].AsInteger;
-    NodeData^.length_in:= MDS.Fields[5].AsInteger;
-    NodeData^.notes:= MDS.Fields[6].AsString;
-    NodeData^.graphic:= MDS.Fields[7].AsString;
-  end;
+      NodeData:= VST.GetNodeData(Node);
+      NodeData^.species_no:= MDS.Fields[0].AsInteger;
+      NodeData^.category:= MDS.Fields[1].AsString;
+      NodeData^.common_name:= MDS.Fields[2].AsString;
+      NodeData^.species_name:= MDS.Fields[3].AsString;
+      NodeData^.length_cm:= MDS.Fields[4].AsInteger;
+      NodeData^.length_in:= MDS.Fields[5].AsInteger;
+      NodeData^.notes:= MDS.Fields[6].AsString;
+      NodeData^.graphic:= MDS.Fields[7].AsString;
+    end
+  else
+    begin
+      if (Node^.Index <> 5)
+      then
+        begin
+          VST.NodeHeight[Node]:= VST.DefaultNodeHeight;
+          Exclude(InitialStates, ivsMultiline);
+        end
+      else
+        begin
+          VST.NodeHeight[Node]:= 50;
+          Include(InitialStates, ivsMultiline);
+        end;
+    end;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
