@@ -45,9 +45,9 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
+    btnFetch: TButton;
+    btnLoad: TButton;
+    btnSave: TButton;
     chbExpand: TCheckBox;
     chbComputeHeight: TCheckBox;
     DBase: TIBDatabase;
@@ -55,9 +55,9 @@ type
     oDlg: TOpenDialog;
     TrRead: TIBTransaction;
     VST: TLazVirtualStringTree;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure btnFetchClick(Sender: TObject);
+    procedure btnLoadClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure chbComputeHeightClick(Sender: TObject);
     procedure chbExpandClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -155,12 +155,8 @@ begin
       NewColumn := Header.Columns.Add;
       NewColumn.Text      := ColumnParams[i].Name;
       NewColumn.Width     := ColumnParams[i].Len;
-      NewColumn.Alignment:= taCenter;
     end;
   end;
-
-  Button2.Visible:= False;
-  Button3.Visible:= False;
 end;
 
 procedure TForm1.VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode
@@ -201,6 +197,8 @@ begin
     NodeData^.length_cm:= 0;
     NodeData^.length_in:= 0;
     NodeData^.species_no:= 0;
+    NodeData^.notes:= '';
+    NodeData^.graphic:= '';
     Finalize(NodeData^);
   end;
 end;
@@ -286,7 +284,7 @@ begin
     end
   else
     begin
-      if (Node^.Index <> 5)
+      if (Node^.Index <> 5) //"NOTES" field
       then
         begin
           VST.NodeHeight[Node]:= VST.DefaultNodeHeight;
@@ -309,7 +307,7 @@ begin
     end;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.btnFetchClick(Sender: TObject);
 var
   execSQL: TIBSQL = nil;
 begin
@@ -378,33 +376,43 @@ begin
   end;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TForm1.btnLoadClick(Sender: TObject);
+var
+  Node: PVirtualNode = nil;
 begin
-  InitMDS(MDS);
+  MDS.Clear(True);
 
+  if FileExists(DataFile)
+  then MDS.LoadFromFile(DataFile)
+  else
+    begin
+      oDlg.Filter:= 'MDS data file (*.dat)|*.dat';
+      oDlg.Options:= oDlg.Options + [ofFileMustExist];
+      oDlg.InitialDir:= ExtractFilePath(DataFile);
+      if oDlg.Execute then MDS.LoadFromFile(oDlg.FileName);
+    end;
+
+  MDS.Active:= True;
+
+  Node:= VST.GetFirstSelected;
+  if not Assigned(Node) then Node:= VST.GetFirst;
+
+  VST.BeginUpdate;
   try
-    MDS.DisableControls;
-
-    if FileExists(DataFile)
-    then MDS.LoadFromFile(DataFile)
-    else
-      begin
-        oDlg.Filter:= 'MDS data file (*.dat)|*.dat';
-        oDlg.Options:= oDlg.Options + [ofFileMustExist];
-        oDlg.InitialDir:= ExtractFilePath(DataFile);
-        //SetCurrentDir(oDlg.InitialDir);
-        if oDlg.Execute then MDS.LoadFromFile(oDlg.FileName);
-      end;
+    VST.Clear;
+    VST.RootNodeCount:= MDS.RecordCount;
   finally
-    MDS.EnableControls;
+    VST.EndUpdate;
   end;
+
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
+procedure TForm1.btnSaveClick(Sender: TObject);
 var
   NewDataFile: String = '';
 begin
   if MDS.IsEmpty then Exit;
+
   if FileExists(DataFile) then
     if not DeleteFile(DataFile) then
     begin

@@ -10,13 +10,12 @@ object Form1: TForm1
   object VST: TLazVirtualStringTree
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
+    AnchorSideRight.Control = btnLoad
     AnchorSideBottom.Control = chbComputeHeight
     Left = 10
     Height = 316
     Top = 10
-    Width = 651
+    Width = 562
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Around = 10
     DefaultText = 'Node'
@@ -31,55 +30,64 @@ object Form1: TForm1
     OnGetNodeDataSize = VSTGetNodeDataSize
     OnInitNode = VSTInitNode
   end
-  object Button1: TButton
+  object btnFetch: TButton
+    AnchorSideLeft.Control = btnLoad
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 559
+    Left = 582
     Height = 25
-    Top = 359
-    Width = 102
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Around = 10
-    Caption = 'Fetch from DB'
-    OnClick = Button1Click
+    Top = 10
+    Width = 79
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 10
+    Caption = 'Fetch'
+    OnClick = btnFetchClick
     TabOrder = 1
   end
-  object Button2: TButton
-    AnchorSideRight.Control = Button1
+  object btnLoad: TButton
+    AnchorSideTop.Control = btnFetch
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 419
+    Left = 582
     Height = 25
-    Top = 359
-    Width = 130
-    Anchors = [akRight, akBottom]
+    Top = 45
+    Width = 79
+    Anchors = [akTop, akRight]
     AutoSize = True
     BorderSpacing.Around = 10
-    Caption = 'MDS Load from File'
-    OnClick = Button2Click
+    Caption = 'Load Data'
+    OnClick = btnLoadClick
     TabOrder = 2
   end
-  object Button3: TButton
-    AnchorSideRight.Control = Button2
+  object btnSave: TButton
+    AnchorSideLeft.Control = btnLoad
+    AnchorSideTop.Control = btnLoad
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 296
+    Left = 582
     Height = 25
-    Top = 359
-    Width = 113
-    Anchors = [akRight, akBottom]
-    AutoSize = True
-    BorderSpacing.Around = 10
-    Caption = 'MDS Save to File'
-    OnClick = Button3Click
+    Top = 80
+    Width = 79
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 10
+    Caption = 'Save Data'
+    OnClick = btnSaveClick
     TabOrder = 3
   end
   object chbExpand: TCheckBox
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Button1
+    AnchorSideTop.Control = btnFetch
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
