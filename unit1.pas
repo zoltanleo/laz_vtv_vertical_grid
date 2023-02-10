@@ -5,8 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, memds, DB, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL;
+  Classes, SysUtils, Math, memds, DB, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL;
 
 const
 
@@ -48,7 +48,8 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    CheckBox1: TCheckBox;
+    chbExpand: TCheckBox;
+    chbComputeHeight: TCheckBox;
     DBase: TIBDatabase;
     MDS: TMemDataset;
     oDlg: TOpenDialog;
@@ -57,6 +58,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure chbComputeHeightClick(Sender: TObject);
+    procedure chbExpandClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -133,12 +136,17 @@ begin
                   ;
     TreeOptions.MiscOptions:= TreeOptions.MiscOptions
                   + [toGridExtensions]
+                  //+ [toVariableNodeHeight]
                   ;
     TreeOptions.PaintOptions:= TreeOptions.PaintOptions
                   + [toShowBackground]
                   + [toHideTreeLinesIfThemed]
                   + [toShowVertGridLines]
                   + [toShowHorzGridLines]
+                  ;
+
+    TreeOptions.SelectionOptions:= TreeOptions.SelectionOptions
+                  //+ [toCenterScrollIntoView]
                   ;
     Header.Columns.Clear;
 
@@ -147,6 +155,7 @@ begin
       NewColumn := Header.Columns.Add;
       NewColumn.Text      := ColumnParams[i].Name;
       NewColumn.Width     := ColumnParams[i].Len;
+      NewColumn.Alignment:= taCenter;
     end;
   end;
 
@@ -165,9 +174,12 @@ procedure TForm1.VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
 var
   i: PtrInt = 0;
 begin
+  //not allow add child nodes for current child node
+  if not (vsHasChildren in Node^.States) then Exit;
+
   VST.BeginUpdate;
   try
-    if CheckBox1.Checked then VST.FullCollapse(nil);
+    if chbExpand.Checked then VST.FullCollapse(nil);
     if (Node^.ChildCount > 0) then VST.DeleteChildren(Node);
     for i:= 0 to Pred(Pred(MDS.FieldCount)) do VST.AddChild(Node);
   finally
@@ -189,7 +201,7 @@ begin
     NodeData^.length_cm:= 0;
     NodeData^.length_in:= 0;
     NodeData^.species_no:= 0;
-    //Finalize(NodeData);
+    Finalize(NodeData^);
   end;
 end;
 
@@ -282,7 +294,16 @@ begin
         end
       else
         begin
-          VST.NodeHeight[Node]:= 50;
+          if chbComputeHeight.Checked
+          then
+            begin
+
+              VST.NodeHeight[Node]:= VST.ComputeNodeHeight(VST.Canvas,Node,1) + 4;
+              VST.NodeHeight[Node]:= Max(VST.DefaultNodeHeight,VST.NodeHeight[Node]);
+            end
+          else
+            VST.NodeHeight[Node]:= 50;
+
           Include(InitialStates, ivsMultiline);
         end;
     end;
@@ -395,6 +416,51 @@ begin
       Exit;
     end;
   MDS.SaveToFile(DataFile)
+end;
+
+procedure TForm1.chbComputeHeightClick(Sender: TObject);
+var
+  Node: PVirtualNode = nil;
+begin
+  if VST.IsEmpty then Exit;
+
+  VST.BeginUpdate;
+  try
+    Node:= VST.GetFirst;
+    while Assigned(Node) do
+    begin
+      if (vsExpanded in Node^.States) then VST.ReinitNode(Node,True);
+      Node:= Node^.NextSibling;
+    end;
+  finally
+    VST.EndUpdate;
+  end;
+end;
+
+procedure TForm1.chbExpandClick(Sender: TObject);
+var
+  Node: PVirtualNode = nil;
+begin
+  if VST.IsEmpty then Exit;
+
+  VST.BeginUpdate;
+  try
+    Node:= VST.GetFirst(False);
+
+    while Assigned(Node) do
+    begin
+      if (vsExpanded in Node^.States) then
+      begin
+        VST.FullCollapse(nil);
+        VST.Expanded[Node]:= True;
+        VST.ScrollIntoView(Node,True);
+        Break;
+      end;
+      Node:= Node^.NextSibling;
+    end;
+  finally
+    VST.EndUpdate;
+  end;
 end;
 
 procedure TForm1.InitMDS(Sender: TMemDataset);
