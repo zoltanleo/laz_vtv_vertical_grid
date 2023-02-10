@@ -30,8 +30,7 @@ object Form1: TForm1
     OnGetNodeDataSize = VSTGetNodeDataSize
     OnInitNode = VSTInitNode
   end
-  object btnFetch: TButton
-    AnchorSideLeft.Control = btnLoad
+  object btnLoad: TButton
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -41,30 +40,12 @@ object Form1: TForm1
     Height = 25
     Top = 10
     Width = 79
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Top = 10
-    BorderSpacing.Right = 10
-    Caption = 'Fetch'
-    OnClick = btnFetchClick
-    TabOrder = 1
-  end
-  object btnLoad: TButton
-    AnchorSideTop.Control = btnFetch
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 582
-    Height = 25
-    Top = 45
-    Width = 79
     Anchors = [akTop, akRight]
     AutoSize = True
     BorderSpacing.Around = 10
     Caption = 'Load Data'
     OnClick = btnLoadClick
-    TabOrder = 2
+    TabOrder = 1
   end
   object btnSave: TButton
     AnchorSideLeft.Control = btnLoad
@@ -76,18 +57,17 @@ object Form1: TForm1
     AnchorSideBottom.Side = asrBottom
     Left = 582
     Height = 25
-    Top = 80
+    Top = 45
     Width = 79
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Top = 10
     BorderSpacing.Right = 10
     Caption = 'Save Data'
     OnClick = btnSaveClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object chbExpand: TCheckBox
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = btnFetch
     AnchorSideTop.Side = asrCenter
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
@@ -99,7 +79,7 @@ object Form1: TForm1
     BorderSpacing.Around = 10
     Caption = 'Collapse others when expanding the current node'
     OnClick = chbExpandClick
-    TabOrder = 4
+    TabOrder = 3
   end
   object chbComputeHeight: TCheckBox
     AnchorSideLeft.Control = Owner
@@ -112,23 +92,7 @@ object Form1: TForm1
     BorderSpacing.Around = 10
     Caption = 'Compute height of multiline node'
     OnClick = chbComputeHeightClick
-    TabOrder = 5
-  end
-  object DBase: TIBDatabase
-    Connected = False
-    CreateIfNotExists = False
-    AllowStreamedConnected = False
-    IdleTimer = 0
-    TraceFlags = []
-    UseDefaultSystemCodePage = False
-    Left = 59
-    Top = 34
-  end
-  object TrRead: TIBTransaction
-    TransactionName = '{CF796BB5-74D3-4990-B9C2-191C748AF264}'
-    Active = False
-    Left = 136
-    Top = 32
+    TabOrder = 4
   end
   object oDlg: TOpenDialog
     DefaultExt = '.dat'

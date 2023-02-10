@@ -1,6 +1,15 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.8
+- removed dbaware components (IBDatabase, IBSQL)
+
+--------
+0.0.7
+- removed MemDataset component
+- implemented save/load BufDataset data to/from file
+
+--------
 0.0.6
 - implemented save MDS data to file
 

@@ -6,25 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Math, BufDataset, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase,
-  DB, IBSQL;
+  Dialogs, StdCtrls, ExtCtrls, laz.VirtualTrees, LazUTF8, db
+  ;
+
 
 const
-
-  {$IFDEF MSWINDOWS}
-  ConnStr = '127.0.0.1/31064:C:\proj\vtv_vertical_grid\base\BIOLIFE.FDB';
-  LibName = 'd:\Portable_program\Firebird_server\Firebird_3_0_10_x64\fbclient.dll';
-  PWDStr = 'password=cooladmin';
-  Usr = 'user_name=SYSDBA';
-  {$ELSE}
-    {$IFDEF DARWIN}
-    ConnStr = '';
-    LibName = '';
-    {$ELSE}
-    ConnStr = '';
-    LibName = '';
-    {$ENDIF}
-  {$ENDIF}
 
   DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
   CantDeleteDataFile = 'Can''t delete old "%s" file. The new file has been saved as "%s"';
@@ -46,17 +32,13 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    btnFetch: TButton;
     btnLoad: TButton;
     btnSave: TButton;
     BDS: TBufDataset;
     chbExpand: TCheckBox;
     chbComputeHeight: TCheckBox;
-    DBase: TIBDatabase;
     oDlg: TOpenDialog;
-    TrRead: TIBTransaction;
     VST: TLazVirtualStringTree;
-    procedure btnFetchClick(Sender: TObject);
     procedure btnLoadClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure chbComputeHeightClick(Sender: TObject);
@@ -101,25 +83,6 @@ var
   NewColumn: TVirtualTreeColumn;
   i: Integer;
 begin
-  with DBase do
-  begin
-    FirebirdLibraryPathName:= LibName;
-    DatabaseName:= ConnStr;
-    Params.Add(Usr);
-    Params.Add(PWDStr);
-    Params.Add('lc_ctype=UTF8');
-    LoginPrompt:= False;
-  end;
-
-  with TrRead do
-  begin
-    Params.Add('read');
-    Params.Add('read_committed');
-    Params.Add('rec_version');
-    Params.Add('nowait');
-    DefaultDatabase:= DBase;
-  end;
-
   with VST do
   begin
     ShowHint:= True;
@@ -306,73 +269,6 @@ begin
           Include(InitialStates, ivsMultiline);
         end;
     end;
-end;
-
-procedure TForm1.btnFetchClick(Sender: TObject);
-var
-  execSQL: TIBSQL = nil;
-begin
-  if not DBase.Connected then DBase.Connected:= True;
-  execSQL:= TIBSQL.Create(Application);
-  execSQL.Transaction:= TrRead;
-  try
-    try
-      TrRead.StartTransaction;
-      execSQL.SQL.Text:=
-        'SELECT ' +
-          'SPECIES_NO, ' +
-          'CATEGORY, ' +
-          'COMMON_NAME, ' +
-          'SPECIES_NAME, ' +
-          'LENGTH__CM_, ' +
-          'LENGTH_IN, ' +
-          'NOTES, ' +
-          'GRAPHIC ' +
-      'FROM BIOLIFE';
-      execSQL.ExecQuery;
-
-      InitBDS(BDS);
-      VST.BeginUpdate;
-
-      try
-        while not execSQL.Eof do
-        begin
-          BDS.AppendRecord([
-                           execSQL.Fields[0].AsInteger,
-                           execSQL.Fields[1].AsString,
-                           execSQL.Fields[2].AsString,
-                           execSQL.Fields[3].AsString,
-                           execSQL.Fields[4].AsInteger,
-                           execSQL.Fields[5].AsInteger,
-                           execSQL.Fields[6].AsVariant,
-                           execSQL.Fields[7].AsVariant
-                            ]);
-
-          execSQL.Next;
-        end;
-
-        VST.Clear;
-        VST.RootNodeCount:= BDS.RecordCount;
-
-      finally
-        VST.EndUpdate;
-      end;
-
-      TrRead.Commit;
-    except
-      on E:Exception do
-      begin
-        TrRead.Rollback;
-        {$IFDEF MSWINDOWS}
-        ShowMessage(WinCPToUTF8(E.Message));
-        {$ELSE}
-        ShowMessage(E.Message);
-        {$ENDIF}
-      end;
-    end;
-  finally
-    FreeAndNil(execSQL);
-  end;
 end;
 
 procedure TForm1.btnLoadClick(Sender: TObject);
