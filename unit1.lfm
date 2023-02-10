@@ -135,9 +135,9 @@ object Form1: TForm1
     Left = 59
     Top = 96
   end
-  object MDS: TMemDataset
+  object BDS: TBufDataset
     FieldDefs = <>
-    Left = 136
-    Top = 104
+    Left = 203
+    Top = 105
   end
 end

@@ -5,8 +5,9 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Math, memds, DB, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, DBGrids, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase, IBSQL;
+  Classes, SysUtils, Math, BufDataset, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, ExtCtrls, laz.VirtualTrees, LazUTF8, IBDatabase,
+  DB, IBSQL;
 
 const
 
@@ -48,10 +49,10 @@ type
     btnFetch: TButton;
     btnLoad: TButton;
     btnSave: TButton;
+    BDS: TBufDataset;
     chbExpand: TCheckBox;
     chbComputeHeight: TCheckBox;
     DBase: TIBDatabase;
-    MDS: TMemDataset;
     oDlg: TOpenDialog;
     TrRead: TIBTransaction;
     VST: TLazVirtualStringTree;
@@ -74,7 +75,7 @@ type
   private
 
   public
-    procedure InitMDS(Sender: TMemDataset);
+    procedure InitBDS(Sender: TBufDataset);
   end;
 
 var
@@ -177,7 +178,7 @@ begin
   try
     if chbExpand.Checked then VST.FullCollapse(nil);
     if (Node^.ChildCount > 0) then VST.DeleteChildren(Node);
-    for i:= 0 to Pred(Pred(MDS.FieldCount)) do VST.AddChild(Node);
+    for i:= 0 to Pred(Pred(BDS.FieldCount)) do VST.AddChild(Node);
   finally
     VST.EndUpdate;
   end;
@@ -227,14 +228,14 @@ var
 begin
   if (vsHasChildren in Node^.States) then
     begin
-      MDS.RecNo:= Succ(Node^.Index);
+      BDS.RecNo:= Succ(Node^.Index);
       NodeData:= VST.GetNodeData(Node);
-      NodeData^.species_no:= MDS.Fields[0].AsInteger;
+      NodeData^.species_no:= BDS.Fields[0].AsInteger;
 
       case Column of
         //0: CellText:= '';
-        //1: CellText:= MDS.Fields[2].AsString;
-        0: CellText:= MDS.Fields[2].AsString;
+        //1: CellText:= BDS.Fields[2].AsString;
+        0: CellText:= BDS.Fields[2].AsString;
         1: CellText:= '';
       end;
     end
@@ -270,17 +271,17 @@ begin
   then
     begin
       InitialStates:= [ivsHasChildren];
-      MDS.RecNo:= Succ(Node^.Index);
+      BDS.RecNo:= Succ(Node^.Index);
 
       NodeData:= VST.GetNodeData(Node);
-      NodeData^.species_no:= MDS.Fields[0].AsInteger;
-      NodeData^.category:= MDS.Fields[1].AsString;
-      NodeData^.common_name:= MDS.Fields[2].AsString;
-      NodeData^.species_name:= MDS.Fields[3].AsString;
-      NodeData^.length_cm:= MDS.Fields[4].AsInteger;
-      NodeData^.length_in:= MDS.Fields[5].AsInteger;
-      NodeData^.notes:= MDS.Fields[6].AsString;
-      NodeData^.graphic:= MDS.Fields[7].AsString;
+      NodeData^.species_no:= BDS.Fields[0].AsInteger;
+      NodeData^.category:= BDS.Fields[1].AsString;
+      NodeData^.common_name:= BDS.Fields[2].AsString;
+      NodeData^.species_name:= BDS.Fields[3].AsString;
+      NodeData^.length_cm:= BDS.Fields[4].AsInteger;
+      NodeData^.length_in:= BDS.Fields[5].AsInteger;
+      NodeData^.notes:= BDS.Fields[6].AsString;
+      NodeData^.graphic:= BDS.Fields[7].AsString;
     end
   else
     begin
@@ -330,14 +331,13 @@ begin
       'FROM BIOLIFE';
       execSQL.ExecQuery;
 
-      InitMDS(MDS);
+      InitBDS(BDS);
       VST.BeginUpdate;
-      MDS.DisableControls;
 
       try
         while not execSQL.Eof do
         begin
-          MDS.AppendRecord([
+          BDS.AppendRecord([
                            execSQL.Fields[0].AsInteger,
                            execSQL.Fields[1].AsString,
                            execSQL.Fields[2].AsString,
@@ -352,10 +352,9 @@ begin
         end;
 
         VST.Clear;
-        VST.RootNodeCount:= MDS.RecordCount;
+        VST.RootNodeCount:= BDS.RecordCount;
 
       finally
-        MDS.EnableControls;
         VST.EndUpdate;
       end;
 
@@ -380,19 +379,17 @@ procedure TForm1.btnLoadClick(Sender: TObject);
 var
   Node: PVirtualNode = nil;
 begin
-  MDS.Clear(True);
+  BDS.Clear;
 
   if FileExists(DataFile)
-  then MDS.LoadFromFile(DataFile)
+  then BDS.LoadFromFile(DataFile)
   else
     begin
-      oDlg.Filter:= 'MDS data file (*.dat)|*.dat';
+      oDlg.Filter:= 'BDS data file (*.dat)|*.dat';
       oDlg.Options:= oDlg.Options + [ofFileMustExist];
       oDlg.InitialDir:= ExtractFilePath(DataFile);
-      if oDlg.Execute then MDS.LoadFromFile(oDlg.FileName);
+      if oDlg.Execute then BDS.LoadFromFile(oDlg.FileName);
     end;
-
-  MDS.Active:= True;
 
   Node:= VST.GetFirstSelected;
   if not Assigned(Node) then Node:= VST.GetFirst;
@@ -400,7 +397,7 @@ begin
   VST.BeginUpdate;
   try
     VST.Clear;
-    VST.RootNodeCount:= MDS.RecordCount;
+    VST.RootNodeCount:= BDS.RecordCount;
   finally
     VST.EndUpdate;
   end;
@@ -411,7 +408,7 @@ procedure TForm1.btnSaveClick(Sender: TObject);
 var
   NewDataFile: String = '';
 begin
-  if MDS.IsEmpty then Exit;
+  if BDS.IsEmpty then Exit;
 
   if FileExists(DataFile) then
     if not DeleteFile(DataFile) then
@@ -420,10 +417,10 @@ begin
       ShowMessage(Format(CantDeleteDataFile,
                         [ExtractFileName(DataFile),
                         ExtractFileName(NewDataFile)]));
-      MDS.SaveToFile(NewDataFile);
+      BDS.SaveToFile(NewDataFile);
       Exit;
     end;
-  MDS.SaveToFile(DataFile)
+  BDS.SaveToFile(DataFile)
 end;
 
 procedure TForm1.chbComputeHeightClick(Sender: TObject);
@@ -471,11 +468,11 @@ begin
   end;
 end;
 
-procedure TForm1.InitMDS(Sender: TMemDataset);
+procedure TForm1.InitBDS(Sender: TBufDataset);
 begin
-  with TMemDataset(Sender) do
+  with TBufDataset(Sender) do
   begin
-    Clear(True);
+    Clear;
     FieldDefs.Add('SPECIES_NO',ftInteger);
     FieldDefs.Add('CATEGORY',ftString,15);
     FieldDefs.Add('COMMON_NAME',ftString,30);
@@ -484,9 +481,8 @@ begin
     FieldDefs.Add('LENGTH_IN',ftInteger);
     FieldDefs.Add('NOTES',ftMemo);
     FieldDefs.Add('GRAPHIC',ftBlob);
-    CreateTable;
+    CreateDataset;
     Active:= True;
-    Filtered:= False;
   end;
 
   //CREATE TABLE BIOLIFE (
@@ -499,7 +495,6 @@ begin
   //    NOTES         BLOB SUB_TYPE 1 SEGMENT SIZE 80,
   //    GRAPHIC       BLOB SUB_TYPE 0 SEGMENT SIZE 80
   //);
-
 end;
 
 end.
