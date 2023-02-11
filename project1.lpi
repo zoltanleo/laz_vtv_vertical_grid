@@ -17,8 +17,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <RevisionNr Value="8"/>
-      <BuildNr Value="31"/>
+      <RevisionNr Value="9"/>
+      <BuildNr Value="32"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -36,15 +36,6 @@
       </Item>
       <Item>
         <PackageName Value="laz.virtualtreeview_package"/>
-      </Item>
-      <Item>
-        <PackageName Value="MemDSLaz"/>
-      </Item>
-      <Item>
-        <PackageName Value="ibnongui"/>
-      </Item>
-      <Item>
-        <PackageName Value="dclibx"/>
       </Item>
       <Item>
         <PackageName Value="LCL"/>

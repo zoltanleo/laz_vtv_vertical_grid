@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.9
+- removed incompatible units from project
+
+--------
 0.0.8
 - removed dbaware components (IBDatabase, IBSQL)
 

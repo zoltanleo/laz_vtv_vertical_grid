@@ -21,6 +21,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="34"/>
         <CursorPos Y="42"/>
         <UsageCount Value="42"/>
@@ -106,12 +107,10 @@
       <Unit>
         <Filename Value="C:\laz_test\lazarus\components\virtualtreeview\laz.virtualtrees.pas"/>
         <UnitName Value="laz.VirtualTrees"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="33046"/>
         <CursorPos Y="33054"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\laz_test\lazarus\lcl\include\buttoncontrol.inc"/>
@@ -169,7 +168,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="291" Column="26" TopLine="280"/>
@@ -253,10 +252,6 @@
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="486" Column="27" TopLine="484"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="10" TopLine="14"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
