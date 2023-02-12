@@ -22,17 +22,17 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="112"/>
-        <CursorPos X="34" Y="125"/>
+        <TopLine Value="118"/>
+        <CursorPos Y="125"/>
         <UsageCount Value="42"/>
         <Bookmarks Count="7">
-          <Item0 Y="291" ID="2"/>
-          <Item1 Y="158" ID="3"/>
-          <Item2 X="20" Y="228" ID="1"/>
-          <Item3 X="17" Y="258" ID="4"/>
-          <Item4 Y="244" ID="5"/>
+          <Item0 Y="297" ID="2"/>
+          <Item1 Y="164" ID="3"/>
+          <Item2 X="20" Y="234" ID="1"/>
+          <Item3 X="17" Y="264" ID="4"/>
+          <Item4 Y="250" ID="5"/>
           <Item5 Y="98"/>
-          <Item6 Y="290" ID="8"/>
+          <Item6 Y="296" ID="8"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -172,11 +172,9 @@
         <ComponentName Value="frmFontDialogEx"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="160"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">

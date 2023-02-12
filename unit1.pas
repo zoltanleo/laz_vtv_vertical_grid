@@ -121,9 +121,15 @@ begin
                   //+ [toShowVertGridLines]
                   //+ [toShowHorzGridLines]
                   {$ELSE}
-                  + [toHideTreeLinesIfThemed]
-                  + [toShowVertGridLines]
-                  + [toShowHorzGridLines]
+                    {$IF DEFINED(LCLqt5)}
+                    //+ [toHideTreeLinesIfThemed]
+                    //+ [toShowVertGridLines]
+                    //+ [toShowHorzGridLines]
+                    {$ELSE}
+                    + [toHideTreeLinesIfThemed]
+                    + [toShowVertGridLines]
+                    + [toShowHorzGridLines]
+                    {$ENDIF}
                   {$ENDIF}
                   ;
 
