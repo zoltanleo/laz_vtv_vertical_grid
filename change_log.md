@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.10
+- fixed some options for Linux OS
+
+--------
 0.0.9
 - removed incompatible units from project
 

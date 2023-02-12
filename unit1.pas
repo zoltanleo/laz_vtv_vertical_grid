@@ -12,7 +12,18 @@ uses
 
 const
 
-  DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
+  {$IFDEF MSWINDOWS}
+    DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
+  {$ELSE}
+    {$IFDEF UNIX}
+      DataFile = '/home/leyba/laz_proj/vtv_vertical_grid/base/biolife.dat';
+    {$ELSE}
+
+    {$ENDIF}
+  {$ENDIF}
+
+
+
   CantDeleteDataFile = 'Can''t delete old "%s" file. The new file has been saved as "%s"';
   //NoChildRecords = 'Node has no children';
 
@@ -44,6 +55,7 @@ type
     procedure chbComputeHeightClick(Sender: TObject);
     procedure chbExpandClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTExpanding(Sender: TBaseVirtualTree; Node: PVirtualNode;
       var Allowed: Boolean);
@@ -104,9 +116,15 @@ begin
                   ;
     TreeOptions.PaintOptions:= TreeOptions.PaintOptions
                   + [toShowBackground]
+                  {$IFDEF LINUX}
+                  //+ [toHideTreeLinesIfThemed]
+                  //+ [toShowVertGridLines]
+                  //+ [toShowHorzGridLines]
+                  {$ELSE}
                   + [toHideTreeLinesIfThemed]
                   + [toShowVertGridLines]
                   + [toShowHorzGridLines]
+                  {$ENDIF}
                   ;
 
     TreeOptions.SelectionOptions:= TreeOptions.SelectionOptions
@@ -121,6 +139,11 @@ begin
       NewColumn.Width     := ColumnParams[i].Len;
     end;
   end;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  btnLoadClick(Sender);
 end;
 
 procedure TForm1.VSTAddToSelection(Sender: TBaseVirtualTree; Node: PVirtualNode
