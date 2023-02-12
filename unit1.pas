@@ -15,10 +15,10 @@ const
   {$IFDEF MSWINDOWS}
     DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
   {$ELSE}
-    {$IFDEF UNIX}
+    {$IFDEF LINIX}
       DataFile = '/home/leyba/laz_proj/vtv_vertical_grid/base/biolife.dat';
     {$ELSE}
-
+      DataFile = '/Users/admin/laz_proj/vtv_vertical_grid/base/biolife.dat';
     {$ENDIF}
   {$ENDIF}
 
@@ -116,21 +116,21 @@ begin
                   ;
     TreeOptions.PaintOptions:= TreeOptions.PaintOptions
                   + [toShowBackground]
-                  {$IFDEF LINUX}
-                  //+ [toHideTreeLinesIfThemed]
-                  //+ [toShowVertGridLines]
-                  //+ [toShowHorzGridLines]
-                  {$ELSE}
-                    {$IF DEFINED(LCLqt5)}
-                    //+ [toHideTreeLinesIfThemed]
-                    //+ [toShowVertGridLines]
-                    //+ [toShowHorzGridLines]
-                    {$ELSE}
-                    + [toHideTreeLinesIfThemed]
-                    + [toShowVertGridLines]
-                    + [toShowHorzGridLines]
-                    {$ENDIF}
-                  {$ENDIF}
+                  //{$IFDEF LINUX}
+                  ////+ [toHideTreeLinesIfThemed]
+                  ////+ [toShowVertGridLines]
+                  ////+ [toShowHorzGridLines]
+                  //{$ELSE}
+                  //  {$IF DEFINED(LCLqt5)}
+                  //  //+ [toHideTreeLinesIfThemed]
+                  //  //+ [toShowVertGridLines]
+                  //  //+ [toShowHorzGridLines]
+                  //  {$ELSE}
+                  //  + [toHideTreeLinesIfThemed]
+                  //  + [toShowVertGridLines]
+                  //  + [toShowHorzGridLines]
+                  //  {$ENDIF}
+                  //{$ENDIF}
                   ;
 
     TreeOptions.SelectionOptions:= TreeOptions.SelectionOptions

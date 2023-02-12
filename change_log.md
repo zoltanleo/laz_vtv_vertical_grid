@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.12
+- fixed *.dat file path for Darwin
+
+--------
 0.0.11
 - fixed some options for Windows qt5
 - added dependency LCLWidgetType for output file name

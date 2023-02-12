@@ -22,8 +22,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="118"/>
-        <CursorPos Y="125"/>
+        <TopLine Value="116"/>
+        <CursorPos Y="119"/>
         <UsageCount Value="42"/>
         <Bookmarks Count="7">
           <Item0 Y="297" ID="2"/>
@@ -296,7 +296,7 @@
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="19" Column="76" TopLine="15"/>
+        <Caret Line="19" Column="15" TopLine="3"/>
       </Position>
     </JumpHistory>
     <RunParams>
