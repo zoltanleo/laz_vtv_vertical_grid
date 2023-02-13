@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.13
+- changed header height, ~~font style and~~ font color
+
+--------
 0.0.12
 - fixed *.dat file path for Darwin
 

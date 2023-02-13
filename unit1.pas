@@ -116,26 +116,10 @@ begin
                   ;
     TreeOptions.PaintOptions:= TreeOptions.PaintOptions
                   + [toShowBackground]
-                  //{$IFDEF LINUX}
-                  ////+ [toHideTreeLinesIfThemed]
-                  ////+ [toShowVertGridLines]
-                  ////+ [toShowHorzGridLines]
-                  //{$ELSE}
-                  //  {$IF DEFINED(LCLqt5)}
-                  //  //+ [toHideTreeLinesIfThemed]
-                  //  //+ [toShowVertGridLines]
-                  //  //+ [toShowHorzGridLines]
-                  //  {$ELSE}
-                  //  + [toHideTreeLinesIfThemed]
-                  //  + [toShowVertGridLines]
-                  //  + [toShowHorzGridLines]
-                  //  {$ENDIF}
-                  //{$ENDIF}
                   ;
-
-    TreeOptions.SelectionOptions:= TreeOptions.SelectionOptions
-                  //+ [toCenterScrollIntoView]
-                  ;
+    Header.Height:= 40;
+    //Header.Font.Style:= Header.Font.Style + [fsBold];
+    Header.Font.Color:= clMenuHighlight;
     Header.Columns.Clear;
 
     for i:= 0 to Pred(length(ColumnParams)) do
@@ -143,6 +127,7 @@ begin
       NewColumn := Header.Columns.Add;
       NewColumn.Text      := ColumnParams[i].Name;
       NewColumn.Width     := ColumnParams[i].Len;
+      NewColumn.CaptionAlignment:= taCenter;
     end;
   end;
 end;
