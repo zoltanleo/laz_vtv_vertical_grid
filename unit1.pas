@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Math, BufDataset, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, laz.VirtualTrees, LazUTF8, db
+  Dialogs, StdCtrls, ExtCtrls, Spin, laz.VirtualTrees, LazUTF8, db
   ;
 
 
@@ -15,7 +15,7 @@ const
   {$IFDEF MSWINDOWS}
     DataFile = 'C:\proj\vtv_vertical_grid\base\biolife.dat';
   {$ELSE}
-    {$IFDEF LINIX}
+    {$IFDEF LINUX}
       DataFile = '/home/leyba/laz_proj/vtv_vertical_grid/base/biolife.dat';
     {$ELSE}
       DataFile = '/Users/admin/laz_proj/vtv_vertical_grid/base/biolife.dat';
@@ -46,11 +46,18 @@ type
     btnLoad: TButton;
     btnSave: TButton;
     BDS: TBufDataset;
+    btnRszColumn: TButton;
     chbExpand: TCheckBox;
     chbComputeHeight: TCheckBox;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
     oDlg: TOpenDialog;
+    SpinEdit1: TSpinEdit;
+    SpinEdit2: TSpinEdit;
     VST: TLazVirtualStringTree;
     procedure btnLoadClick(Sender: TObject);
+    procedure btnRszColumnClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure chbComputeHeightClick(Sender: TObject);
     procedure chbExpandClick(Sender: TObject);
@@ -116,10 +123,15 @@ begin
                   ;
     TreeOptions.PaintOptions:= TreeOptions.PaintOptions
                   + [toShowBackground]
+                  //+ [toShowHorzGridLines]
+                  //+ [toShowVertGridLines]
+                  //- [toShowTreeLines]
                   ;
+
+
     Header.Height:= 40;
-    //Header.Font.Style:= Header.Font.Style + [fsBold];
-    Header.Font.Color:= clMenuHighlight;
+    Header.Font.Style:= Header.Font.Style + [fsBold];
+    Header.Font.Color:= clHighlight;
     Header.Columns.Clear;
 
     for i:= 0 to Pred(length(ColumnParams)) do
@@ -128,6 +140,22 @@ begin
       NewColumn.Text      := ColumnParams[i].Name;
       NewColumn.Width     := ColumnParams[i].Len;
       NewColumn.CaptionAlignment:= taCenter;
+    end;
+
+    with SpinEdit1 do
+    begin
+      MinValue:= 30;
+      MaxValue:= 1000;
+      Increment:= 5;
+      Value:= MinValue;
+    end;
+
+    with SpinEdit2 do
+    begin
+      MinValue:= 30;
+      MaxValue:= 1000;
+      Increment:= 5;
+      Value:= MinValue;
     end;
   end;
 end;
@@ -312,6 +340,17 @@ begin
     VST.EndUpdate;
   end;
 
+end;
+
+procedure TForm1.btnRszColumnClick(Sender: TObject);
+begin
+  with VST.Header do
+  begin
+    Columns[0].Width:= SpinEdit1.Value;
+    Columns[1].Width:= SpinEdit2.Value;
+  end;
+
+  VST.Refresh;
 end;
 
 procedure TForm1.btnSaveClick(Sender: TObject);
