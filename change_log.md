@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.15
+- unknonw fix
+
+--------
 0.0.14
 - fix error for *.dat file path for linux
 - implemented column width resize by programmaticaly

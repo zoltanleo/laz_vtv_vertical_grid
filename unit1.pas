@@ -95,7 +95,7 @@ const
     Name: String;
     Len: integer;
    end =
-  ((Name:'Field Name'     ; Len:150),
+  ((Name:'Field Name'  ; Len:150),
    (Name:'Field Value' ; Len:300)
   );
 var

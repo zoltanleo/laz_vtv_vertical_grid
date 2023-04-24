@@ -12,7 +12,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
       </Unit>
       <Unit>
         <Filename Value="unit1.pas"/>
@@ -22,9 +22,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="68"/>
-        <CursorPos X="3" Y="78"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="85"/>
+        <CursorPos X="24" Y="98"/>
+        <UsageCount Value="57"/>
         <Bookmarks Count="7">
           <Item0 Y="310" ID="2"/>
           <Item1 Y="177" ID="3"/>
@@ -180,41 +180,13 @@
         <Filename Value="C:\laz_win32\lazarus\components\virtualtreeview\laz.virtualtrees.pas"/>
         <UnitName Value="laz.VirtualTrees"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="19821"/>
-        <CursorPos X="3" Y="19803"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="3072"/>
+        <CursorPos X="33" Y="2891"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="107" Column="45" TopLine="100"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="19" Column="15" TopLine="3"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="117" Column="37" TopLine="109"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="119" TopLine="105"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="120" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="121" TopLine="107"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="122" TopLine="108"/>
-      </Position>
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="123" TopLine="109"/>
@@ -306,6 +278,34 @@
       <Position>
         <Filename Value="unit1.pas"/>
         <Caret Line="315" TopLine="306"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\laz_win32\lazarus\components\virtualtreeview\laz.virtualtrees.pas"/>
+        <Caret Line="19796" Column="37" TopLine="19791"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\laz_win32\lazarus\components\virtualtreeview\laz.virtualtrees.pas"/>
+        <Caret Line="2830" Column="17" TopLine="2825"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\laz_win32\lazarus\components\virtualtreeview\laz.virtualtrees.pas"/>
+        <Caret Line="24217" Column="3" TopLine="24305"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="77" Column="59" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="316" TopLine="315"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="79" Column="3" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="365" Column="3" TopLine="362"/>
       </Position>
     </JumpHistory>
     <RunParams>
