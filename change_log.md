@@ -1,6 +1,10 @@
 ### Test project for vertical grid emulation in VTV
 
 --------
+0.0.16
+- added "readme.md" file
+
+--------
 0.0.15
 - unknonw fix
 
